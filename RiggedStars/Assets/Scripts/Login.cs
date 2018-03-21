@@ -4,6 +4,7 @@ using System.Collections;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 
 public class Login : MonoBehaviour {
 
@@ -71,7 +72,6 @@ public class Login : MonoBehaviour {
         request.uploadHandler = (UploadHandler)new UploadHandlerRaw(bodyRaw);
         request.downloadHandler = (DownloadHandler)new DownloadHandlerBuffer();
         request.SetRequestHeader("Content-Type", "application/json");
-        request.SetRequestHeader("Access-Control-Allow-Origin", "*");
 
         yield return request.SendWebRequest();
         var jsonResponse = request.downloadHandler.text;
@@ -102,8 +102,9 @@ public class Login : MonoBehaviour {
         response.SetText("Login succesfull!");
         tokenDebug.SetText("Token: " + responseData.Token);
 
-        //#TODO: Save token and load main scene
+        PlayerPrefs.SetString("Token", responseData.Token.Split(' ')[1]);
 
+        SceneManager.LoadScene("Main");
     }
 
     public void LoginButton() {
