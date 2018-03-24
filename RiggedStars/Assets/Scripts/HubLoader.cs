@@ -13,11 +13,10 @@ public class HubLoader : MonoBehaviour {
     public GameObject RoomListContent;
     public RoomListElement RoomInfo;
 
-    private const string url = "http://127.0.0.1:3000/game/roomList";
+    private const string route = "/game/roomList";
 
     void Start() {
 
-        TokenCheck.text = PlayerPrefs.GetString("Token");
         RefreshRoomList();
     }
 
@@ -27,7 +26,7 @@ public class HubLoader : MonoBehaviour {
     }
 
     IEnumerator GetRoomList() {
-        var request = new UnityWebRequest(url, "GET");
+        var request = new UnityWebRequest("http://" + ServerConfig.getServerURL() + route, "GET");
         request.downloadHandler = (DownloadHandler)new DownloadHandlerBuffer();
         yield return request.SendWebRequest();
 
@@ -51,7 +50,6 @@ public class HubLoader : MonoBehaviour {
         foreach (var room in roomList) {
             var roomInfo = Instantiate<RoomListElement>(RoomInfo, RoomListContent.transform);
             roomInfo.SetData(room);
-            Debug.Log(room.Name);
         }
     }
 
