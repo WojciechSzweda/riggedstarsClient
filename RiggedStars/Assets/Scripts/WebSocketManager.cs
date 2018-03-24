@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections;
+using System.Text;
 using UnityEngine;
 
 public class WebSocketManager : MonoBehaviour {
@@ -27,8 +28,10 @@ public class WebSocketManager : MonoBehaviour {
         yield return StartCoroutine(webSocket.Connect());
         Debug.Log("Connected to websocket: " + ws);
         while (true) {
-            string reply = webSocket.RecvString();
-            if (reply != null) {
+            byte[] replyBytes = webSocket.Recv();
+            if (replyBytes != null) {
+                string reply = Encoding.ASCII.GetString(replyBytes);
+                Debug.Log(reply);
                 Debug.Log("Received: " + reply);
                 var replyMsg = JsonConvert.DeserializeObject<WsMessage>(reply);
                 if (replyMsg.Type == "text") {
