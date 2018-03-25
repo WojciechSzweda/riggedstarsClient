@@ -1,20 +1,31 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class LoginCanvasHandler : MonoBehaviour {
+[Serializable]
+public class ButtonEvent : UnityEvent { }
 
+public class CanvasKeyboardManager : MonoBehaviour {
 
+    public GameObject FirstSelected;
+    public ButtonEvent ButtonClick;
     void Start() {
         system = EventSystem.current;
-
+        system.SetSelectedGameObject(FirstSelected.gameObject, new BaseEventData(system));
     }
+
+    public void Test() {
+        Debug.Log("CLICK");
+    }
+
     EventSystem system;
 #pragma warning disable 618
     void Update() {
         if (Input.GetKeyDown(KeyCode.Return)) {
-            FindObjectOfType<LoginManager>().LoginButton();
+            ButtonClick.Invoke();
+            //FindObjectOfType<LoginManager>().LoginButton();
         }
 
         if (Input.GetKeyDown(KeyCode.Tab)) {
@@ -22,12 +33,12 @@ public class LoginCanvasHandler : MonoBehaviour {
             if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift)) {
                 next = system.currentSelectedGameObject.GetComponent<Selectable>().FindSelectableOnUp();
                 if (next == null)
-                    next = system.lastSelectedGameObject.GetComponent<Selectable>();
+                    next = FirstSelected.GetComponent<Selectable>();
             }
             else {
                 next = system.currentSelectedGameObject.GetComponent<Selectable>().FindSelectableOnDown();
                 if (next == null)
-                    next = system.firstSelectedGameObject.GetComponent<Selectable>();
+                    next = FirstSelected.GetComponent<Selectable>();
             }
 
             if (next != null) {
@@ -37,6 +48,7 @@ public class LoginCanvasHandler : MonoBehaviour {
 
                 system.SetSelectedGameObject(next.gameObject, new BaseEventData(system));
             }
+            Debug.Log(next.name);
 
         }
     }

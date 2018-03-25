@@ -7,6 +7,19 @@ using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using Newtonsoft.Json;
 
+public class UserForm {
+    public string Name;
+    public string Password;
+}
+
+#pragma warning disable 649
+public class UserResponseForm {
+    public ClientData Data;
+    public string Token;
+    public int Status;
+}
+#pragma warning restore 649
+
 public class LoginManager : MonoBehaviour {
 
 
@@ -16,17 +29,6 @@ public class LoginManager : MonoBehaviour {
 
 
 
-    class LoginForm {
-        public string Name;
-        public string Password;
-    }
-#pragma warning disable 649
-    class LoginResponseForm {
-        public ClientData Data;
-        public string Token;
-        public int Status;
-    }
-#pragma warning restore 649
 
     private void Start() {
         loginInputField.onValueChanged.AddListener(delegate { response.SetText(""); });
@@ -41,7 +43,7 @@ public class LoginManager : MonoBehaviour {
         var request = new UnityWebRequest("http://" + ServerConfig.getServerURL() + "/user/login", "POST");
         request.chunkedTransfer = false;
 
-        var jsonText = JsonUtility.ToJson(new LoginForm { Name = loginInputField.text, Password = passwordInputField.text });
+        var jsonText = JsonUtility.ToJson(new UserForm { Name = loginInputField.text, Password = passwordInputField.text });
         Debug.Log(jsonText);
         byte[] bodyRaw = new System.Text.UTF8Encoding().GetBytes(jsonText);
         request.uploadHandler = (UploadHandler)new UploadHandlerRaw(bodyRaw);
@@ -66,7 +68,7 @@ public class LoginManager : MonoBehaviour {
             yield break;
         }
 
-        var responseData = JsonConvert.DeserializeObject<LoginResponseForm>(jsonResponse);
+        var responseData = JsonConvert.DeserializeObject<UserResponseForm>(jsonResponse);
         if (responseData.Status != 200) {
             Debug.Log("Response error");
             response.SetText("Response from server error");
