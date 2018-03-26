@@ -8,11 +8,14 @@ public class ChatManager : MonoBehaviour {
     public GameObject ChatContent;
     public TMP_InputField ChatInput;
 
-    private WebSocketManager WSManager;
+    //private WebSocketManager WSManager;
+
+    public delegate void SendChatMessageEvent(string message);
+    public event SendChatMessageEvent OnSendMessage;
 
     private void Start() {
-        WSManager = FindObjectOfType<WebSocketManager>();
-        WSManager.OnMessageReceived += MessageReceived;
+        //WSManager = FindObjectOfType<WebSocketManager>();
+        //WSManager.OnMessageReceived += MessageReceived;
     }
 
     public void SendChatMessage() {
@@ -20,8 +23,9 @@ public class ChatManager : MonoBehaviour {
 
         CreateMessageObject(ClientInfo.Name, message);
 
-        var jsonMsg = JsonConvert.SerializeObject(new WsMessage { Type = "text", Payload = message });
-        WSManager.SendMessageToWebSocket(jsonMsg);
+        var jsonMsg = JsonConvert.SerializeObject(new WsChatMessage { Type = "text", Payload = message });
+        OnSendMessage(jsonMsg);
+        //WSManager.SendMessageToWebSocket(jsonMsg);
         ChatInput.text = "";
     }
 
@@ -30,10 +34,9 @@ public class ChatManager : MonoBehaviour {
         msg.SetMessage(name, message);
     }
 
-    public void MessageReceived(string message) {
-        Debug.Log("Message Received Event");
+    public void MessageReceived(string name, string message) {
         Debug.Log("Message: " + message);
 
-        CreateMessageObject("find his name", message);
+        CreateMessageObject(name, message);
     }
 }

@@ -4,20 +4,16 @@ public class UIManager : MonoBehaviour {
 
     [SerializeField]
     private GameObject HUB;
-    [SerializeField]
-    private GameObject Room;
 
     private void Start() {
     }
 
-    public void JoinRoom() {
+    public void HideHUB() {
         HUB.SetActive(false);
-        Room.SetActive(true);
     }
 
-    public void JoinHub() {
+    public void ShowHUB() {
         HUB.SetActive(true);
-        Room.SetActive(false);
     }
 
 

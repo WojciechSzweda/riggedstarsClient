@@ -32,7 +32,7 @@ public class HubLoader : MonoBehaviour {
 
         var response = request.downloadHandler.text;
 
-        var roomList = JsonConvert.DeserializeObject<List<Room>>(response);
+        var roomList = JsonConvert.DeserializeObject<List<RoomForm>>(response);
 
         foreach (Transform room in RoomListContent.transform) {
             Destroy(room.gameObject);

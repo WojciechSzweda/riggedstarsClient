@@ -19,9 +19,3 @@ public static class ClientInfo {
 
 }
 
-public class ClientData {
-    public int ID { get; set; }
-    public string CreatedAt { get; set; }
-    public string Name { get; set; }
-    public long Stack { get; set; }
-}

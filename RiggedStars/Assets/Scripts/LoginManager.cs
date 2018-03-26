@@ -7,18 +7,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using Newtonsoft.Json;
 
-public class UserForm {
-    public string Name;
-    public string Password;
-}
 
-#pragma warning disable 649
-public class UserResponseForm {
-    public ClientData Data;
-    public string Token;
-    public int Status;
-}
-#pragma warning restore 649
 
 public class LoginManager : MonoBehaviour {
 
@@ -33,10 +22,6 @@ public class LoginManager : MonoBehaviour {
     private void Start() {
         loginInputField.onValueChanged.AddListener(delegate { response.SetText(""); });
         passwordInputField.onValueChanged.AddListener(delegate { response.SetText(""); });
-
-        //TODO: DELETE THIS - DEBUG ONLY
-        loginInputField.text = "Wojtek";
-        passwordInputField.text = "123456";
     }
 
     IEnumerator Post() {

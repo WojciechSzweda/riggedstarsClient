@@ -1,9 +1,96 @@
-﻿using UnityEngine;
+﻿using Newtonsoft.Json;
+using System;
+using System.Collections;
+using System.Text;
+using UnityEngine;
 
-[System.Serializable]
-public struct Room {
-    public int ID { get; set; }
-    public int ClientsCount { get; set; }
-    public int MaxClients { get; set; }
+public class Room : MonoBehaviour {
+
+
+    int RoomID;
+
+    [SerializeField]
+    ChatManager Chat;
+    [SerializeField]
+    ClientListManager ClientList;
+
+    private WebSocket webSocket;
+
+
+    public void JoinRoom(int id) {
+        RoomID = id;
+        StartCoroutine(ConnectToWebSocket());
+        Chat.OnSendMessage += SendMessageToWebSocket;
+        //TODO: better hub to room transition -> minimize to corner?
+        FindObjectOfType<UIManager>().HideHUB();
+    }
+
+    public int GetRoomID() {
+        return RoomID;
+    }
+
+    IEnumerator ConnectToWebSocket() {
+        string ws = "ws://" + ServerConfig.getServerURL() + "/game?user=" + ClientInfo.ID.ToString() + "&roomId=" + RoomID.ToString();
+        webSocket = new WebSocket(new Uri(ws));
+        Debug.Log("Trying to connect to WebSocket: " + ws);
+        yield return StartCoroutine(webSocket.Connect());
+        Debug.Log("Connected to websocket: " + ws);
+        while (true) {
+            byte[] replyBytes = webSocket.Recv();
+            if (replyBytes != null) {
+                string reply = Encoding.ASCII.GetString(replyBytes);
+                Debug.Log("Received: " + reply);
+                var replyType = JsonConvert.DeserializeObject<WsMessage>(reply);
+                if (replyType.Type == "text") {
+                    var replyMsg = JsonConvert.DeserializeObject<WsChatMessage>(reply);
+                    Chat.MessageReceived(replyMsg.Name, replyMsg.Payload);
+                }
+                if (replyType.Type == "newUser") {
+                    var replyMsg = JsonConvert.DeserializeObject<WsUserMessage>(reply);
+                    ClientList.AddClient(replyMsg.Payload.ID, replyMsg.Payload.Name);
+                }
+                if (replyType.Type == "deleteUser") {
+                    var replyMsg = JsonConvert.DeserializeObject<WsUserMessage>(reply);
+                    ClientList.DeleteClient(replyMsg.Payload.ID);
+                }
+            }
+            if (webSocket.error != null) {
+                Debug.LogError("Error: " + webSocket.error);
+                break;
+            }
+            yield return 0;
+        }
+        webSocket.Close();
+    }
+
+    public void SendMessageToWebSocket(string message) {
+        webSocket.SendString(message);
+    }
+
+    private void OnApplicationQuit() {
+        webSocket.Close();
+    }
+
+    public void LeaveRoom() {
+        //TODO: leave -> minimize room
+        webSocket.Close();
+        FindObjectOfType<RoomManager>().DestroyRoom(RoomID);
+    }
+}
+
+public class WsMessage {
+    public string Type;
+    //public string Payload;
+}
+
+public class WsChatMessage {
+    public string Type { get; set; }
     public string Name { get; set; }
+    public string Payload { get; set; }
+}
+
+
+
+public class WsUserMessage {
+    public ClientData Payload { get; set; }
 }

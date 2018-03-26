@@ -48,8 +48,6 @@ public class CanvasKeyboardManager : MonoBehaviour {
 
                 system.SetSelectedGameObject(next.gameObject, new BaseEventData(system));
             }
-            Debug.Log(next.name);
-
         }
     }
 #pragma warning restore 618
