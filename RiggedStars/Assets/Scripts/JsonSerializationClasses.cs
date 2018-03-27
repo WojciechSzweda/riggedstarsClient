@@ -13,6 +13,11 @@ public class UserForm {
     public string Password;
 }
 
+public class CreateRoomForm {
+    public string Name;
+    public int MaxClients;
+}
+
 //#pragma warning disable 649
 public class UserResponseForm {
     public ClientData Data;
