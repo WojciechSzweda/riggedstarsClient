@@ -16,17 +16,13 @@ public class CanvasKeyboardManager : MonoBehaviour {
         system.SetSelectedGameObject(FirstSelected.gameObject, new BaseEventData(system));
     }
 
-    public void Test() {
-        Debug.Log("CLICK");
-    }
-
     EventSystem system;
 #pragma warning disable 618
     void Update() {
         if (Input.GetKeyDown(KeyCode.Return)) {
             ButtonClick.Invoke();
-            //FindObjectOfType<LoginManager>().LoginButton();
         }
+
 
         if (Input.GetKeyDown(KeyCode.Tab)) {
             Selectable next = null;
@@ -37,17 +33,16 @@ public class CanvasKeyboardManager : MonoBehaviour {
             }
             else {
                 next = system.currentSelectedGameObject.GetComponent<Selectable>().FindSelectableOnDown();
-                if (next == null)
+                if (next == null || next.gameObject.transform.parent.gameObject != gameObject)
                     next = FirstSelected.GetComponent<Selectable>();
             }
 
             if (next != null) {
-
                 InputField inputfield = next.GetComponent<InputField>();
                 if (inputfield != null) inputfield.OnPointerClick(new PointerEventData(system));
-
                 system.SetSelectedGameObject(next.gameObject, new BaseEventData(system));
             }
+            Debug.Log(next.name);
         }
     }
 #pragma warning restore 618

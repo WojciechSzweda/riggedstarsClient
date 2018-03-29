@@ -8,40 +8,40 @@ public class CreateRoom : MonoBehaviour {
 
     public TMP_InputField NameInput;
     public TMP_InputField MaxClientsInput;
-
+    public GameObject ValidateErrorPanel;
 
     public void CreateRoomButton() {
         StartCoroutine(CreateRoomPost());
     }
 
+    void ShowValidateError(string error) {
+        ValidateErrorPanel.SetActive(true);
+        ValidateErrorPanel.GetComponentInChildren<TextMeshProUGUI>().SetText(error);
+    }
+
     IEnumerator CreateRoomPost() {
-        var request = new UnityWebRequest("http://" + ServerConfig.getServerURL() + "/game/createRoom", "POST");
-        request.chunkedTransfer = false;
         int maxClients;
         var maxClientsParseError = int.TryParse(MaxClientsInput.text, out maxClients);
 
-        if (maxClientsParseError == false) {
-            //TODO: Show error msg
-            yield return null;
+        if (maxClientsParseError == false || maxClients > 9 || maxClients < 2) {
+            ShowValidateError("Max clients field has to be a number (2-9)");
+            yield break;
         }
 
-        var jsonText = JsonUtility.ToJson(new CreateRoomForm { Name = NameInput.text, MaxClients = maxClients });
-        Debug.Log(jsonText);
-        byte[] bodyRaw = new System.Text.UTF8Encoding().GetBytes(jsonText);
-        request.uploadHandler = (UploadHandler)new UploadHandlerRaw(bodyRaw);
-        request.downloadHandler = (DownloadHandler)new DownloadHandlerBuffer();
-        request.SetRequestHeader("Content-Type", "application/json");
-
+        UnityWebRequest request = REST.CreatePostRequest(
+            "http://" + ServerConfig.getServerURL() + "/game/createRoom",
+            new CreateRoomForm { Name = NameInput.text, MaxClients = maxClients }
+            );
         yield return request.SendWebRequest();
 
         if (request.isHttpError || request.isNetworkError) {
-            //TODO: erro msg
+            ShowValidateError("Connection Error");
             yield break;
         }
 
         Debug.Log("room created");
         FindObjectOfType<HubLoader>().RefreshRoomList();
-        //TODO: make prefab
+        //TODO: make prefab of this gameobject?
         gameObject.SetActive(false);
         NameInput.text = "";
         MaxClientsInput.text = "";

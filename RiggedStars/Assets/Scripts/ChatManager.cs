@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using UnityEngine;
 using TMPro;
+using UnityEngine.EventSystems;
 
 public class ChatManager : MonoBehaviour {
 
@@ -8,14 +9,17 @@ public class ChatManager : MonoBehaviour {
     public GameObject ChatContent;
     public TMP_InputField ChatInput;
 
-    //private WebSocketManager WSManager;
 
     public delegate void SendChatMessageEvent(string message);
     public event SendChatMessageEvent OnSendMessage;
 
-    private void Start() {
-        //WSManager = FindObjectOfType<WebSocketManager>();
-        //WSManager.OnMessageReceived += MessageReceived;
+    private void Update() {
+        if (Input.GetKeyDown(KeyCode.Return)) {
+            if(EventSystem.current.currentSelectedGameObject == ChatInput.gameObject) {
+                SendChatMessage();
+                ChatInput.ActivateInputField();
+            }
+        }
     }
 
     public void SendChatMessage() {
@@ -25,7 +29,6 @@ public class ChatManager : MonoBehaviour {
 
         var jsonMsg = JsonConvert.SerializeObject(new WsChatMessage { Type = "text", Payload = message });
         OnSendMessage(jsonMsg);
-        //WSManager.SendMessageToWebSocket(jsonMsg);
         ChatInput.text = "";
     }
 

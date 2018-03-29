@@ -18,13 +18,11 @@ public class CreateRoomForm {
     public int MaxClients;
 }
 
-//#pragma warning disable 649
 public class UserResponseForm {
     public ClientData Data;
     public string Token;
     public int Status;
 }
-//#pragma warning restore 649
 
 public class ClientData {
     public int ID { get; set; }

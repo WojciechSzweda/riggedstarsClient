@@ -26,13 +26,11 @@ public class HubLoader : MonoBehaviour {
     }
 
     IEnumerator GetRoomList() {
-        var request = new UnityWebRequest("http://" + ServerConfig.getServerURL() + route, "GET");
-        request.downloadHandler = (DownloadHandler)new DownloadHandlerBuffer();
+        UnityWebRequest request = REST.CreateGetRequest("http://" + ServerConfig.getServerURL() + route);
         yield return request.SendWebRequest();
 
         var response = request.downloadHandler.text;
 
-        var roomList = JsonConvert.DeserializeObject<List<RoomForm>>(response);
 
         foreach (Transform room in RoomListContent.transform) {
             Destroy(room.gameObject);
@@ -46,6 +44,7 @@ public class HubLoader : MonoBehaviour {
             ErrorInfo.text = "";
         }
 
+        var roomList = JsonConvert.DeserializeObject<List<RoomForm>>(response);
 
         foreach (var room in roomList) {
             var roomInfo = Instantiate<RoomListElement>(RoomInfo, RoomListContent.transform);
