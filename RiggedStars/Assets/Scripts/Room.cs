@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 
@@ -13,6 +14,8 @@ public class Room : MonoBehaviour {
     ChatManager Chat;
     [SerializeField]
     ClientListManager ClientList;
+    [SerializeField]
+    PlayerSeat PlayerSeatCards;
 
     private WebSocket webSocket;
 
@@ -52,6 +55,10 @@ public class Room : MonoBehaviour {
                 if (replyType.Type == "deleteUser") {
                     var replyMsg = JsonConvert.DeserializeObject<WsUserMessage>(reply);
                     ClientList.DeleteClient(replyMsg.Payload.ID);
+                }
+                if(replyType.Type == "ownCards") {
+                    var replyMsg = JsonConvert.DeserializeObject<WsCardsForm>(reply);
+                    PlayerSeatCards.OwnCards(replyMsg.Payload);
                 }
             }
             if (webSocket.error != null) {

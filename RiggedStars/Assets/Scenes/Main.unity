@@ -546,8 +546,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -76.575, y: 176.03}
-  m_SizeDelta: {x: 509.65, y: 50.458}
+  m_AnchoredPosition: {x: 13.125, y: 176.03}
+  m_SizeDelta: {x: 330.25, y: 50.459}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &47840369
 MonoBehaviour:
@@ -595,8 +595,8 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 24
-  m_fontSizeBase: 24
+  m_fontSize: 18
+  m_fontSizeBase: 18
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -895,7 +895,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 820365866}
   m_HandleRect: {fileID: 820365865}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -2219,7 +2219,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b29f1b3e4b3a384185dbc29cc802b6e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  RoomPrefab: {fileID: 114291453708538680, guid: a35307a54825b6f4896ef04096043724,
+  RoomPrefab: {fileID: 114143409584764592, guid: 76d6b0385690cae42a1ffedb9abc808d,
     type: 2}
 --- !u!4 &739888703
 Transform:

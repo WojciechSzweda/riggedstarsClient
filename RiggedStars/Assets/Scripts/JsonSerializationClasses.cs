@@ -30,3 +30,14 @@ public class ClientData {
     public string Name { get; set; }
     public long Stack { get; set; }
 }
+
+public class CardForm {
+    public int Value { get; set; }
+    public string Suit { get; set; }
+}
+
+public class WsCardsForm {
+    public string Type;
+    public CardForm[] Payload;
+}
+

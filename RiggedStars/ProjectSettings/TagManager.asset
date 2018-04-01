@@ -41,3 +41,12 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Table
+    uniqueID: 693331273
+    locked: 0
+  - name: PlayerSeat
+    uniqueID: 413993055
+    locked: 0
+  - name: Cards
+    uniqueID: 511756909
+    locked: 0
