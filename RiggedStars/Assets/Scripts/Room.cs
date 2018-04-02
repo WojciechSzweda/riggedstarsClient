@@ -16,6 +16,10 @@ public class Room : MonoBehaviour {
     ClientListManager ClientList;
     [SerializeField]
     PlayerSeat PlayerSeatCards;
+    [SerializeField]
+    BetStage BettingStage;
+    [SerializeField]
+    TableCardsManager TableCards;
 
     private WebSocket webSocket;
 
@@ -24,6 +28,7 @@ public class Room : MonoBehaviour {
         RoomID = id;
         StartCoroutine(ConnectToWebSocket());
         Chat.OnSendMessage += SendMessageToWebSocket;
+        BettingStage.OnClientAction += SendMessageToWebSocket;
         //TODO: better hub to room transition -> minimize to corner?
         FindObjectOfType<UIManager>().HideHUB();
     }
@@ -43,7 +48,7 @@ public class Room : MonoBehaviour {
             if (replyBytes != null) {
                 string reply = Encoding.ASCII.GetString(replyBytes);
                 Debug.Log("Received: " + reply);
-                var replyType = JsonConvert.DeserializeObject<WsMessage>(reply);
+                var replyType = JsonConvert.DeserializeObject<WsForm>(reply);
                 if (replyType.Type == "text") {
                     var replyMsg = JsonConvert.DeserializeObject<WsChatMessage>(reply);
                     Chat.MessageReceived(replyMsg.Name, replyMsg.Payload);
@@ -56,9 +61,21 @@ public class Room : MonoBehaviour {
                     var replyMsg = JsonConvert.DeserializeObject<WsUserMessage>(reply);
                     ClientList.DeleteClient(replyMsg.Payload.ID);
                 }
-                if(replyType.Type == "ownCards") {
+                if (replyType.Type == "ownCards") {
                     var replyMsg = JsonConvert.DeserializeObject<WsCardsForm>(reply);
                     PlayerSeatCards.OwnCards(replyMsg.Payload);
+                }
+                if (replyType.Type == "activePlayer") {
+                    var replyMsg = JsonConvert.DeserializeObject<ActivePlayerForm>(reply);
+                    //TODO: mark active player
+                    //TODO: consider changing to id
+                    if (replyMsg.Name == ClientInfo.Name) {
+                        BettingStage.ActiveBet(replyMsg.MinBet);
+                    }
+                }
+                if(replyType.Type == "tableCards") {
+                    var replyMsg = JsonConvert.DeserializeObject<TableCardsForm>(reply);
+                    TableCards.SetTableCards(replyMsg.Payload);
                 }
             }
             if (webSocket.error != null) {
@@ -85,10 +102,6 @@ public class Room : MonoBehaviour {
     }
 }
 
-public class WsMessage {
-    public string Type;
-    //public string Payload;
-}
 
 public class WsChatMessage {
     public string Type { get; set; }

@@ -36,8 +36,25 @@ public class CardForm {
     public string Suit { get; set; }
 }
 
-public class WsCardsForm {
-    public string Type;
+public class WsCardsForm : WsForm {
     public CardForm[] Payload;
+}
+
+public class BetForm : WsForm{
+    public int Payload { get; set; }
+}
+
+public class WsForm {
+    public string Type { get; set; }
+}
+
+public class ActivePlayerForm : WsForm{
+    public string Name { get; set; }
+    public int ID { get; set; }
+    public int MinBet { get; set; }
+}
+
+public class TableCardsForm : WsForm {
+    public CardForm[] Payload { get; set; }
 }
 
