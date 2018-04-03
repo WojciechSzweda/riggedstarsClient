@@ -77,6 +77,10 @@ public class Room : MonoBehaviour {
                     var replyMsg = JsonConvert.DeserializeObject<TableCardsForm>(reply);
                     TableCards.SetTableCards(replyMsg.Payload);
                 }
+                if(replyType.Type == "endRound") {
+                    TableCards.ClearTable();
+                    PlayerSeatCards.ClearCards();
+                }
             }
             if (webSocket.error != null) {
                 Debug.LogError("Error: " + webSocket.error);

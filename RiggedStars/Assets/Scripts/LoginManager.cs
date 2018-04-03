@@ -14,9 +14,19 @@ public class LoginManager : MonoBehaviour {
     public TMP_InputField passwordInputField;
     public TextMeshProUGUI response;
 
+    
+    void DebugAutoLogin() {
+        loginInputField.text = "Wojtek";
+        passwordInputField.text = "123456";
+
+        LoginButton();
+    }
+
     private void Start() {
         loginInputField.onValueChanged.AddListener(delegate { response.SetText(""); });
         passwordInputField.onValueChanged.AddListener(delegate { response.SetText(""); });
+
+        DebugAutoLogin();
     }
 
     IEnumerator Post() {
@@ -24,7 +34,7 @@ public class LoginManager : MonoBehaviour {
             "http://" + ServerConfig.getServerURL() + "/user/login",
             new UserForm { Name = loginInputField.text, Password = passwordInputField.text }
             );
-
+        //TODO: logging feedback
         yield return request.SendWebRequest();
         var jsonResponse = request.downloadHandler.text;
         Debug.Log("Response: " + jsonResponse);

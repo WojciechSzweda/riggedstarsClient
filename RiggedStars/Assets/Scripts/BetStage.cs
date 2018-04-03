@@ -24,33 +24,52 @@ public class BetStage : MonoBehaviour {
 
     public void BetInputChanged() {
         int value = int.Parse(BetInput.text);
-        BetSlider.value = value;
-        Debug.Log("Input changed " + value.ToString());
+        if (value < BetSlider.minValue) {
+            BetInput.text = BetSlider.minValue.ToString();
+            BetSlider.value = BetSlider.minValue;
+        }
+        else {
+            BetSlider.value = value;
+        }
     }
 
     public void BetSliderChanged() {
         BetInput.text = BetSlider.value.ToString();
-        Debug.Log("Slider changed " + BetSlider.value.ToString());
     }
 
     public void ActiveBet(int minBet) {
         BetInput.text = minBet.ToString();
-        //if (minBet == 0) {
-        //    //can check, cant fold
-        //    CheckButton.interactable = true;
-        //    BetButton.interactable = true;
-        //    FoldButton.interactable = false;
-        //}
-        //else if (minBet > 0) {
-        //    CheckButton.interactable = false;
-        //    BetButton.interactable = true;
-        //    FoldButton.interactable = true;
-        //}
+        if (minBet == 0) {
+            //can check, cant fold
+            CheckButton.interactable = true;
+            BetButton.interactable = true;
+            FoldButton.interactable = false;
+            BetInput.interactable = true;
+            BetSlider.interactable = true;
+        }
+        else if (minBet > 0) {
+            //cant check, can bet/fold
+            CheckButton.interactable = false;
+            BetButton.interactable = true;
+            FoldButton.interactable = true;
+            BetInput.interactable = true;
+            BetSlider.interactable = true;
+            BetSlider.minValue = minBet;
+        }
+    }
+
+    void ActionTaken() {
+        CheckButton.interactable = false;
+        BetButton.interactable = false;
+        FoldButton.interactable = false;
+        BetInput.interactable = false;
+        BetSlider.interactable = false;
     }
 
     public void Bet() {
         int bet = int.Parse(BetInput.text);
         SendBetMessage(bet);
+        ActionTaken();
     }
 
     void SendBetMessage(int bet = 0) {
@@ -61,10 +80,12 @@ public class BetStage : MonoBehaviour {
 
     public void Check() {
         SendBetMessage();
+        ActionTaken();
     }
 
     public void Fold() {
         OnClientAction(JsonConvert.SerializeObject(new WsForm { Type = "fold" }));
+        ActionTaken();
     }
 
 }

@@ -47,6 +47,19 @@ public class TableCardsManager : MonoBehaviour {
         else {
             Turn(cards);
         }
+    }
 
+    public void ClearTable() {
+        for (int i = 0; i < FlopCardsSlot.Length; i++) {
+            for (int j = 0; j < FlopCardsSlot[i].transform.childCount; j++) {
+                Destroy(FlopCardsSlot[i].transform.GetChild(j).gameObject);
+            }
+        }
+        for (int i = 0; i < TurnCardSlot.transform.childCount; i++) {
+            Destroy(TurnCardSlot.transform.GetChild(i).gameObject);
+        }
+        for (int i = 0; i < FlopCardsSlot[i].transform.childCount; i++) {
+            Destroy(RiverCardSlot.transform.GetChild(i).gameObject);
+        }
     }
 }
