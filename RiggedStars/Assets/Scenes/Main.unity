@@ -2753,6 +2753,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ClientNameText: {fileID: 22680871}
+  StackText: {fileID: 0}
 --- !u!4 &1122497322
 Transform:
   m_ObjectHideFlags: 0

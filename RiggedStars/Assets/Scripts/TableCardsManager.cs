@@ -58,7 +58,7 @@ public class TableCardsManager : MonoBehaviour {
         for (int i = 0; i < TurnCardSlot.transform.childCount; i++) {
             Destroy(TurnCardSlot.transform.GetChild(i).gameObject);
         }
-        for (int i = 0; i < FlopCardsSlot[i].transform.childCount; i++) {
+        for (int i = 0; i < RiverCardSlot.transform.childCount; i++) {
             Destroy(RiverCardSlot.transform.GetChild(i).gameObject);
         }
     }

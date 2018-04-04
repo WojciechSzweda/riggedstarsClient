@@ -19,6 +19,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 224652754447227770}
+  - component: {fileID: 114612456198386292}
   m_Layer: 0
   m_Name: Seats2Players
   m_TagString: Untagged
@@ -70,6 +71,18 @@ MonoBehaviour:
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
+--- !u!114 &114612456198386292
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1237493487531662}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62640c4663e50634a8ed2a78fb816576, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  PlayerSeats: []
 --- !u!222 &222541172324836480
 CanvasRenderer:
   m_ObjectHideFlags: 1

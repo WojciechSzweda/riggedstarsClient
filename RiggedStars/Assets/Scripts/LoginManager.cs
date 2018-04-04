@@ -14,7 +14,7 @@ public class LoginManager : MonoBehaviour {
     public TMP_InputField passwordInputField;
     public TextMeshProUGUI response;
 
-    
+
     void DebugAutoLogin() {
         loginInputField.text = "Wojtek";
         passwordInputField.text = "123456";
@@ -26,7 +26,7 @@ public class LoginManager : MonoBehaviour {
         loginInputField.onValueChanged.AddListener(delegate { response.SetText(""); });
         passwordInputField.onValueChanged.AddListener(delegate { response.SetText(""); });
 
-        DebugAutoLogin();
+        //DebugAutoLogin();
     }
 
     IEnumerator Post() {

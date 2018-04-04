@@ -8,29 +8,31 @@ using UnityEngine;
 public class Room : MonoBehaviour {
 
 
+
     int RoomID;
 
-    [SerializeField]
-    ChatManager Chat;
-    [SerializeField]
-    ClientListManager ClientList;
-    [SerializeField]
-    PlayerSeat PlayerSeatCards;
-    [SerializeField]
-    BetStage BettingStage;
-    [SerializeField]
-    TableCardsManager TableCards;
+    [SerializeField] ChatManager Chat;
+    [SerializeField] ClientListManager ClientList;
+    [SerializeField] PlayerSeat PlayerSeatSlot;
+    [SerializeField] BetStage BettingStage;
+    [SerializeField] TableCardsManager TableCards;
+    [SerializeField] SeatsMap PlayersSeatStructureMap;
 
     private WebSocket webSocket;
+    private PlayersSeatStructure CurrentSeatStructure;
 
-
-    public void JoinRoom(int id) {
+    public void JoinRoom(int id, int maxClients) {
         RoomID = id;
         StartCoroutine(ConnectToWebSocket());
         Chat.OnSendMessage += SendMessageToWebSocket;
         BettingStage.OnClientAction += SendMessageToWebSocket;
         //TODO: better hub to room transition -> minimize to corner?
         FindObjectOfType<UIManager>().HideHUB();
+        CreateSeats(maxClients);
+    }
+
+    void CreateSeats(int maxClients) {
+        CurrentSeatStructure = Instantiate<PlayersSeatStructure>(PlayersSeatStructureMap[maxClients], PlayerSeatSlot.transform);
     }
 
     public int GetRoomID() {
@@ -63,7 +65,7 @@ public class Room : MonoBehaviour {
                 }
                 if (replyType.Type == "ownCards") {
                     var replyMsg = JsonConvert.DeserializeObject<WsCardsForm>(reply);
-                    PlayerSeatCards.OwnCards(replyMsg.Payload);
+                    PlayerSeatSlot.OwnCards(replyMsg.Payload);
                 }
                 if (replyType.Type == "activePlayer") {
                     var replyMsg = JsonConvert.DeserializeObject<ActivePlayerForm>(reply);
@@ -73,13 +75,20 @@ public class Room : MonoBehaviour {
                         BettingStage.ActiveBet(replyMsg.MinBet);
                     }
                 }
-                if(replyType.Type == "tableCards") {
+                if (replyType.Type == "tableCards") {
                     var replyMsg = JsonConvert.DeserializeObject<TableCardsForm>(reply);
                     TableCards.SetTableCards(replyMsg.Payload);
                 }
-                if(replyType.Type == "endRound") {
+                if (replyType.Type == "startRound") {
+                    var replyMsg = JsonConvert.DeserializeObject<StartRoundForm>(reply);
+                    CurrentSeatStructure.FillSeatsWithPlayers(replyMsg.Players);
+                    //TODO: consider moving player slot to player structure
+                    PlayerSeatSlot.SetStackText(replyMsg.Players[CurrentSeatStructure.GetClientIndex(replyMsg.Players)].Stack);
+                    //TODO: button player mark
+                }
+                if (replyType.Type == "endRound") {
                     TableCards.ClearTable();
-                    PlayerSeatCards.ClearCards();
+                    PlayerSeatSlot.ClearCards();
                 }
             }
             if (webSocket.error != null) {
@@ -118,3 +127,4 @@ public class WsChatMessage {
 public class WsUserMessage {
     public ClientData Payload { get; set; }
 }
+

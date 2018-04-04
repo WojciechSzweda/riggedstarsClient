@@ -11,9 +11,9 @@ public class RoomManager : MonoBehaviour {
         Rooms = new Dictionary<int, Room>();
     }
 
-    public void CreateRoom(int roomID) {
+    public void CreateRoom(int roomID, int maxClients) {
         Room room = Instantiate<Room>(RoomPrefab, transform);
-        room.JoinRoom(roomID);
+        room.JoinRoom(roomID, maxClients);
         Rooms.Add(roomID, room);
     }
 

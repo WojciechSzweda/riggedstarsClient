@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Collections.Generic;
+using UnityEngine;
 
 [System.Serializable]
 public class RoomForm {
@@ -58,3 +60,13 @@ public class TableCardsForm : WsForm {
     public CardForm[] Payload { get; set; }
 }
 
+public class StartRoundForm : WsForm {
+    public Dictionary<string, PlayerInfo> Players { get; set; }
+    public PlayerInfo ButtonClient { get; set; }
+}
+
+public class PlayerInfo {
+    public int ID { get; set; }
+    public string Name { get; set; }
+    public int Stack { get; set; }
+}
