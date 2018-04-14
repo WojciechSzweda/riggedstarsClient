@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -6,24 +7,19 @@ using UnityEngine;
 [System.Serializable]
 public class PlayersSeatStructure : MonoBehaviour {
 
-    public Seat[] PlayerSeats;
+    public PlayerSeatSlot[] PlayerSeatSlots;
+    [SerializeField] Seat SeatPrefab;
     private int maxPlayers;
 
     private void Start() {
-        maxPlayers = PlayerSeats.Length + 1;
+        maxPlayers = PlayerSeatSlots.Length + 1;
+        foreach (var seat in PlayerSeatSlots) {
+            seat.CurrentSeat = Instantiate<Seat>(SeatPrefab, seat.transform);
+        }
     }
 
     public string GetClientIndex(Dictionary<string, PlayerInfo> players) {
         return players.FirstOrDefault(x => x.Value.ID == ClientInfo.ID).Key;
-        //int clientIndex = 0;
-        //for (int i = 0; i < maxPlayers; i++) {
-        //    if (players.ContainsKey(i.ToString()))
-        //        if (players[i.ToString()].ID == ClientInfo.ID) {
-        //            clientIndex = i;
-        //            break;
-        //        }
-        //}
-        //return clientIndex;
     }
 
     public void FillSeatsWithPlayers(Dictionary<string, PlayerInfo> players) {
@@ -34,10 +30,22 @@ public class PlayersSeatStructure : MonoBehaviour {
             int playerIndex = i % maxPlayers;
             int seatIndex = i - (clientIndex + 1);
             if (players.ContainsKey(playerIndex.ToString()))
-                PlayerSeats[seatIndex].SeatPlayer(players[playerIndex.ToString()]);
+                PlayerSeatSlots[seatIndex].CurrentSeat.SeatPlayer(players[playerIndex.ToString()]);
             else {
-                PlayerSeats[seatIndex].RemovePlayer();
+                PlayerSeatSlots[seatIndex].CurrentSeat.RemovePlayer();
             }
+        }
+    }
+
+    public void ActivePlayerBorder(int id) {
+        foreach (var slot in PlayerSeatSlots) {
+            if (slot.CurrentSeat.Player != null) {
+                slot.CurrentSeat.SetActiveBorder(false);
+            }
+        }
+        var currentPlayer = PlayerSeatSlots.Where(x => x.CurrentSeat.Player != null).FirstOrDefault(x => x.CurrentSeat.Player.ID == id);
+        if (currentPlayer != null) {
+            currentPlayer.CurrentSeat.SetActiveBorder(true);
         }
     }
 }

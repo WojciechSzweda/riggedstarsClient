@@ -508,6 +508,8 @@ MonoBehaviour:
   - {fileID: 1743406386380314}
   cardPrefab: {fileID: 114518593989711034, guid: e682111896d41174a93bcccaf3def616,
     type: 2}
+  ActiveBorder: {fileID: 114056501815981748}
+  ActiveBorderColor: {r: 0, g: 1, b: 0.048275948, a: 0.747}
 --- !u!222 &222410734650823718
 CanvasRenderer:
   m_ObjectHideFlags: 1
@@ -625,7 +627,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -330, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224767218064649326

@@ -70,3 +70,15 @@ public class PlayerInfo {
     public string Name { get; set; }
     public int Stack { get; set; }
 }
+
+public class WsChatMessage {
+    public string Type { get; set; }
+    public string Name { get; set; }
+    public string Payload { get; set; }
+}
+
+
+
+public class WsUserMessage {
+    public ClientData Payload { get; set; }
+}

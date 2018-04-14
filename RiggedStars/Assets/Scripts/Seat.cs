@@ -1,18 +1,23 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
-
 public class Seat : MonoBehaviour {
 
     public TextMeshProUGUI PlayerNameText;
     public TextMeshProUGUI PlayerStackText;
     public PlayerInfo Player;
-    [SerializeField]
-    GameObject[] CardSlots;
-    [SerializeField]
-    Card cardPrefab;
+    [SerializeField] GameObject[] CardSlots;
+    [SerializeField] Card cardPrefab;
+    [SerializeField] Image ActiveBorder;
+    [SerializeField] Color ActiveBorderColor;
 
+    private Color activeBorderColorDefault;
+
+    private void Start() {
+        activeBorderColorDefault = ActiveBorder.color;
+    }
 
     public void ShowCards(CardForm[] cards) {
         for (int i = 0; i < CardSlots.Length; i++) {
@@ -39,5 +44,18 @@ public class Seat : MonoBehaviour {
         Player = null;
         PlayerNameText.SetText(string.Empty);
         PlayerStackText.SetText(string.Empty);
+    }
+
+    public void SetStackText(int stack) {
+        PlayerStackText.SetText(stack.ToString());
+    }
+
+    public void SetActiveBorder(bool active) {
+        if (active) {
+            ActiveBorder.color = ActiveBorderColor;
+        }
+        else {
+            ActiveBorder.color = activeBorderColorDefault;
+        }
     }
 }

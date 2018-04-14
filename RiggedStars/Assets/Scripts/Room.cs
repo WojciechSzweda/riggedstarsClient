@@ -2,129 +2,105 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using UnityEngine;
 
+[RequireComponent(typeof(WebSocketManager))]
 public class Room : MonoBehaviour {
 
 
 
-    int RoomID;
 
     [SerializeField] ChatManager Chat;
     [SerializeField] ClientListManager ClientList;
-    [SerializeField] PlayerSeat PlayerSeatSlot;
+    [SerializeField] Seat PlayerSeatSlot;
     [SerializeField] BetStage BettingStage;
     [SerializeField] TableCardsManager TableCards;
-    [SerializeField] SeatsMap PlayersSeatStructureMap;
+    [SerializeField] PlayersSeatStructure[] PlayersSeatStructures;
 
-    private WebSocket webSocket;
+    private int RoomID;
     private PlayersSeatStructure CurrentSeatStructure;
+    private WebSocketManager _WebSocketManager;
 
     public void JoinRoom(int id, int maxClients) {
         RoomID = id;
-        StartCoroutine(ConnectToWebSocket());
-        Chat.OnSendMessage += SendMessageToWebSocket;
-        BettingStage.OnClientAction += SendMessageToWebSocket;
+        string wsPath = "ws://" + ServerConfig.getServerURL() + "/game?user=" + ClientInfo.ID.ToString() + "&roomId=" + RoomID.ToString();
+        _WebSocketManager = GetComponent<WebSocketManager>();
+        _WebSocketManager.StartWebSocket(MakeWebsocketActions(), wsPath);
+        Chat.OnSendMessage += _WebSocketManager.SendMessageToWebSocket;
+        BettingStage.OnClientAction += _WebSocketManager.SendMessageToWebSocket;
         //TODO: better hub to room transition -> minimize to corner?
         FindObjectOfType<UIManager>().HideHUB();
         CreateSeats(maxClients);
+        PlayerSeatSlot.SeatPlayer(new PlayerInfo { ID = ClientInfo.ID, Name = ClientInfo.Name });
     }
 
     void CreateSeats(int maxClients) {
-        CurrentSeatStructure = Instantiate<PlayersSeatStructure>(PlayersSeatStructureMap[maxClients], PlayerSeatSlot.transform);
-    }
-
-    public int GetRoomID() {
-        return RoomID;
-    }
-
-    IEnumerator ConnectToWebSocket() {
-        string ws = "ws://" + ServerConfig.getServerURL() + "/game?user=" + ClientInfo.ID.ToString() + "&roomId=" + RoomID.ToString();
-        webSocket = new WebSocket(new Uri(ws));
-        Debug.Log("Trying to connect to WebSocket: " + ws);
-        yield return StartCoroutine(webSocket.Connect());
-        Debug.Log("Connected to websocket: " + ws);
-        while (true) {
-            byte[] replyBytes = webSocket.Recv();
-            if (replyBytes != null) {
-                string reply = Encoding.ASCII.GetString(replyBytes);
-                Debug.Log("Received: " + reply);
-                var replyType = JsonConvert.DeserializeObject<WsForm>(reply);
-                if (replyType.Type == "text") {
-                    var replyMsg = JsonConvert.DeserializeObject<WsChatMessage>(reply);
-                    Chat.MessageReceived(replyMsg.Name, replyMsg.Payload);
-                }
-                if (replyType.Type == "newUser") {
-                    var replyMsg = JsonConvert.DeserializeObject<WsUserMessage>(reply);
-                    ClientList.AddClient(replyMsg.Payload.ID, replyMsg.Payload.Name);
-                }
-                if (replyType.Type == "deleteUser") {
-                    var replyMsg = JsonConvert.DeserializeObject<WsUserMessage>(reply);
-                    ClientList.DeleteClient(replyMsg.Payload.ID);
-                }
-                if (replyType.Type == "ownCards") {
-                    var replyMsg = JsonConvert.DeserializeObject<WsCardsForm>(reply);
-                    PlayerSeatSlot.OwnCards(replyMsg.Payload);
-                }
-                if (replyType.Type == "activePlayer") {
-                    var replyMsg = JsonConvert.DeserializeObject<ActivePlayerForm>(reply);
-                    //TODO: mark active player
-                    //TODO: consider changing to id
-                    if (replyMsg.Name == ClientInfo.Name) {
-                        BettingStage.ActiveBet(replyMsg.MinBet);
-                    }
-                }
-                if (replyType.Type == "tableCards") {
-                    var replyMsg = JsonConvert.DeserializeObject<TableCardsForm>(reply);
-                    TableCards.SetTableCards(replyMsg.Payload);
-                }
-                if (replyType.Type == "startRound") {
-                    var replyMsg = JsonConvert.DeserializeObject<StartRoundForm>(reply);
-                    CurrentSeatStructure.FillSeatsWithPlayers(replyMsg.Players);
-                    //TODO: consider moving player slot to player structure
-                    PlayerSeatSlot.SetStackText(replyMsg.Players[CurrentSeatStructure.GetClientIndex(replyMsg.Players)].Stack);
-                    //TODO: button player mark
-                }
-                if (replyType.Type == "endRound") {
-                    TableCards.ClearTable();
-                    PlayerSeatSlot.ClearCards();
-                }
-            }
-            if (webSocket.error != null) {
-                Debug.LogError("Error: " + webSocket.error);
-                break;
-            }
-            yield return 0;
+        var mappedSeat = PlayersSeatStructures.FirstOrDefault(x => x.PlayerSeatSlots.Count() == maxClients - 1);
+        if (mappedSeat != null)
+            CurrentSeatStructure = Instantiate<PlayersSeatStructure>(mappedSeat, PlayerSeatSlot.transform.parent.transform);
+        else {
+            Debug.LogError("there is no seat structure with " + maxClients + "players");
         }
-        webSocket.Close();
     }
 
-    public void SendMessageToWebSocket(string message) {
-        webSocket.SendString(message);
+    void ActivePlayerBorder(int id) {
+        CurrentSeatStructure.ActivePlayerBorder(id);
+        PlayerSeatSlot.SetActiveBorder(id == ClientInfo.ID);
     }
 
-    private void OnApplicationQuit() {
-        webSocket.Close();
+    Dictionary<string, Action<string>> MakeWebsocketActions() {
+        var WebsocketActions = new Dictionary<string, Action<string>>();
+        WebsocketActions.Add("text", (reply) => {
+            var replyMsg = JsonConvert.DeserializeObject<WsChatMessage>(reply);
+            Chat.MessageReceived(replyMsg.Name, replyMsg.Payload);
+        });
+        WebsocketActions.Add("newUser", (reply) => {
+            var replyMsg = JsonConvert.DeserializeObject<WsUserMessage>(reply);
+            ClientList.AddClient(replyMsg.Payload.ID, replyMsg.Payload.Name);
+        });
+        WebsocketActions.Add("deleteuser", (reply) => {
+            var replyMsg = JsonConvert.DeserializeObject<WsUserMessage>(reply);
+            ClientList.DeleteClient(replyMsg.Payload.ID);
+        });
+        WebsocketActions.Add("ownCards", (reply) => {
+            var replyMsg = JsonConvert.DeserializeObject<WsCardsForm>(reply);
+            PlayerSeatSlot.ShowCards(replyMsg.Payload);
+        });
+        WebsocketActions.Add("activePlayer", (reply) => {
+            var replyMsg = JsonConvert.DeserializeObject<ActivePlayerForm>(reply);
+            ActivePlayerBorder(replyMsg.ID);
+            //TODO: consider changing to id
+            if (replyMsg.Name == ClientInfo.Name) {
+                BettingStage.ActiveBet(replyMsg.MinBet);
+            }
+        });
+        WebsocketActions.Add("tableCards", (reply) => {
+            var replyMsg = JsonConvert.DeserializeObject<TableCardsForm>(reply);
+            TableCards.SetTableCards(replyMsg.Payload);
+        });
+        WebsocketActions.Add("startRound", (reply) => {
+            var replyMsg = JsonConvert.DeserializeObject<StartRoundForm>(reply);
+            CurrentSeatStructure.FillSeatsWithPlayers(replyMsg.Players);
+            //TODO: consider moving player slot to player structure
+            PlayerSeatSlot.SetStackText(replyMsg.Players[CurrentSeatStructure.GetClientIndex(replyMsg.Players)].Stack);
+            //TODO: button player mark
+        });
+        WebsocketActions.Add("endRound", (reply) => {
+            TableCards.ClearTable();
+            PlayerSeatSlot.ClearCards();
+        });
+        //TODO: "bet"
+        return WebsocketActions;
     }
+
 
     public void LeaveRoom() {
         //TODO: leave -> minimize room
-        webSocket.Close();
+        _WebSocketManager.Close();
         FindObjectOfType<RoomManager>().DestroyRoom(RoomID);
     }
 }
 
-
-public class WsChatMessage {
-    public string Type { get; set; }
-    public string Name { get; set; }
-    public string Payload { get; set; }
-}
-
-
-
-public class WsUserMessage {
-    public ClientData Payload { get; set; }
-}
 
