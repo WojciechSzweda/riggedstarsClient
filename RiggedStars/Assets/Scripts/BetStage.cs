@@ -18,6 +18,7 @@ public class BetStage : MonoBehaviour {
     TMP_InputField BetInput;
     [SerializeField]
     Slider BetSlider;
+    [SerializeField] Bet PlayerBetField;
 
     public delegate void SendBetMessageEvent(string message);
     public event SendBetMessageEvent OnClientAction;
@@ -70,6 +71,7 @@ public class BetStage : MonoBehaviour {
         int bet = int.Parse(BetInput.text);
         SendBetMessage(bet);
         ActionTaken();
+        PlayerBetField.SetBetSize(bet);
     }
 
     void SendBetMessage(int bet = 0) {

@@ -48,4 +48,16 @@ public class PlayersSeatStructure : MonoBehaviour {
             currentPlayer.CurrentSeat.SetActiveBorder(true);
         }
     }
+
+    public void SetClientBet(int id, int ammount) {
+        PlayerSeatSlots.Where(x => x.CurrentSeat.Player != null).FirstOrDefault(x => x.CurrentSeat.Player.ID == id).CurrentSeat.SetBet(ammount);
+    }
+
+    public void ClearAllBets() {
+        foreach (var slot in PlayerSeatSlots) {
+            if (slot.CurrentSeat.Player != null) {
+                slot.CurrentSeat.ClearBet();
+            }
+        }
+    }
 }

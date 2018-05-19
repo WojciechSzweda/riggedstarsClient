@@ -12,11 +12,16 @@ public class Seat : MonoBehaviour {
     [SerializeField] Card cardPrefab;
     [SerializeField] Image ActiveBorder;
     [SerializeField] Color ActiveBorderColor;
+    [SerializeField] Bet BetPrefab;
+    Bet Bet;
 
     private Color activeBorderColorDefault;
 
     private void Start() {
         activeBorderColorDefault = ActiveBorder.color;
+        if (transform.parent.name != "PlayerSeats")
+            Bet = Instantiate<Bet>(BetPrefab, transform.parent.Find("BetHolder").transform);
+
     }
 
     public void ShowCards(CardForm[] cards) {
@@ -57,5 +62,13 @@ public class Seat : MonoBehaviour {
         else {
             ActiveBorder.color = activeBorderColorDefault;
         }
+    }
+
+    public void SetBet(int ammount) {
+        Bet.SetBetSize(ammount);
+    }
+
+    public void ClearBet() {
+        Bet.ClearBet();
     }
 }

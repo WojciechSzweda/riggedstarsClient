@@ -18,6 +18,9 @@ public class Room : MonoBehaviour {
     [SerializeField] BetStage BettingStage;
     [SerializeField] TableCardsManager TableCards;
     [SerializeField] PlayersSeatStructure[] PlayersSeatStructures;
+    [SerializeField] Bet PlayerBetField;
+    [SerializeField] PotManager Pot;
+    [SerializeField] WinnerNotifier WinnerNotifier;
 
     private int RoomID;
     private PlayersSeatStructure CurrentSeatStructure;
@@ -81,6 +84,7 @@ public class Room : MonoBehaviour {
             TableCards.SetTableCards(replyMsg.Payload);
         });
         WebsocketActions.Add("startRound", (reply) => {
+            Pot.ClearPot();
             var replyMsg = JsonConvert.DeserializeObject<StartRoundForm>(reply);
             CurrentSeatStructure.FillSeatsWithPlayers(replyMsg.Players);
             //TODO: consider moving player slot to player structure
@@ -90,8 +94,29 @@ public class Room : MonoBehaviour {
         WebsocketActions.Add("endRound", (reply) => {
             TableCards.ClearTable();
             PlayerSeatSlot.ClearCards();
+            var replyMsg = JsonConvert.DeserializeObject<EndRoundMessageForm>(reply);
+            WinnerNotifier.ShowWinnerMessage(replyMsg.Winners.Select(x => x.Name).ToArray(), replyMsg.Pot);
+
         });
-        //TODO: "bet"
+        WebsocketActions.Add("bet", (reply) => {
+            var replyMsg = JsonConvert.DeserializeObject<BetForm>(reply);
+            if (replyMsg.ID == ClientInfo.ID) {
+                PlayerBetField.SetBetSize(replyMsg.Ammount);
+                return;
+            }
+            CurrentSeatStructure.SetClientBet(replyMsg.ID, replyMsg.Ammount);
+
+        });
+        WebsocketActions.Add("endBetStage", (reply) => {
+            var replyMsg = JsonConvert.DeserializeObject<EndBetStageForm>(reply);
+            PlayerBetField.ClearBet();
+            CurrentSeatStructure.ClearAllBets();
+            Pot.AddToPot(replyMsg.Pot);
+        });
+        WebsocketActions.Add("fold", (reply) => {
+            //TODO: change color of folded player
+
+        });
         return WebsocketActions;
     }
 

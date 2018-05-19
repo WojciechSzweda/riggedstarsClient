@@ -510,6 +510,8 @@ MonoBehaviour:
     type: 2}
   ActiveBorder: {fileID: 114056501815981748}
   ActiveBorderColor: {r: 0, g: 1, b: 0.048275948, a: 0.747}
+  BetPrefab: {fileID: 114404009491269068, guid: 537cc7889d7747246be028d8dba2b4c3,
+    type: 2}
 --- !u!222 &222410734650823718
 CanvasRenderer:
   m_ObjectHideFlags: 1

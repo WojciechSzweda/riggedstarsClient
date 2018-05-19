@@ -18,8 +18,6 @@ public class Card : MonoBehaviour {
         SuitText.color = suit.color;
         ValueText.SetText(ValueConverter(card.Value));
         ValueText.color = suit.color;
-        var bgColor = new Color { a = 0.25f, r = suit.color.r, g = suit.color.g, b = suit.color.b };
-        GetComponent<Image>().color = bgColor;
     }
 
     struct SuitColor {
@@ -30,7 +28,7 @@ public class Card : MonoBehaviour {
 
     SuitColor SuitConverter(string suit) {
         if (suit == "clubs")
-            return new SuitColor { Symbol = "♣", color = Color.green };
+            return new SuitColor { Symbol = "♣", color = new Color(0,200,0) };
         else if (suit == "spades")
             return new SuitColor { Symbol = "♠", color = Color.black };
         else if (suit == "diamonds")

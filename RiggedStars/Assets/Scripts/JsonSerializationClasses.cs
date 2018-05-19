@@ -44,6 +44,12 @@ public class WsCardsForm : WsForm {
 
 public class BetForm : WsForm{
     public int Payload { get; set; }
+    public int ID { get; set; }
+    public int Ammount { get; set; }
+}
+
+public class EndBetStageForm : WsForm {
+    public int Pot { get; set; }
 }
 
 public class WsForm {
@@ -75,6 +81,11 @@ public class WsChatMessage {
     public string Type { get; set; }
     public string Name { get; set; }
     public string Payload { get; set; }
+}
+
+public class EndRoundMessageForm : WsForm {
+    public PlayerInfo[] Winners { get; set; }
+    public int Pot { get; set; }
 }
 
 
