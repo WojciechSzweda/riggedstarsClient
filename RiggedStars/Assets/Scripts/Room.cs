@@ -87,21 +87,27 @@ public class Room : MonoBehaviour {
             Pot.ClearPot();
             var replyMsg = JsonConvert.DeserializeObject<StartRoundForm>(reply);
             CurrentSeatStructure.FillSeatsWithPlayers(replyMsg.Players);
-            //TODO: consider moving player slot to player structure
-            PlayerSeatSlot.SetStackText(replyMsg.Players[CurrentSeatStructure.GetClientIndex(replyMsg.Players)].Stack);
+            PlayerSeatSlot.SetStack(replyMsg.Players[CurrentSeatStructure.GetClientIndex(replyMsg.Players)].Stack);
             //TODO: button player mark
         });
         WebsocketActions.Add("endRound", (reply) => {
             TableCards.ClearTable();
             PlayerSeatSlot.ClearCards();
             var replyMsg = JsonConvert.DeserializeObject<EndRoundMessageForm>(reply);
-            WinnerNotifier.ShowWinnerMessage(replyMsg.Winners.Select(x => x.Name).ToArray(), replyMsg.Pot);
+            WinnerNotifier.ShowWinnerMessage(replyMsg.Winners);
+            foreach (var winner in replyMsg.Winners) {
+                if (winner.Winner.ID == ClientInfo.ID) {
+                    PlayerSeatSlot.ChangeStack(winner.Ammount);
+                }
+                CurrentSeatStructure.SetClientBet(winner.Winner.ID, winner.Ammount);
+            }
 
         });
         WebsocketActions.Add("bet", (reply) => {
             var replyMsg = JsonConvert.DeserializeObject<BetForm>(reply);
             if (replyMsg.ID == ClientInfo.ID) {
                 PlayerBetField.SetBetSize(replyMsg.Ammount);
+                PlayerSeatSlot.ChangeStack(-replyMsg.Ammount);
                 return;
             }
             CurrentSeatStructure.SetClientBet(replyMsg.ID, replyMsg.Ammount);

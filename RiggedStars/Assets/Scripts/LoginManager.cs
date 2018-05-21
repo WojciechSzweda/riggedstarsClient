@@ -26,7 +26,7 @@ public class LoginManager : MonoBehaviour {
         loginInputField.onValueChanged.AddListener(delegate { response.SetText(""); });
         passwordInputField.onValueChanged.AddListener(delegate { response.SetText(""); });
 
-        DebugAutoLogin();
+        //DebugAutoLogin();
     }
 
     IEnumerator Post() {

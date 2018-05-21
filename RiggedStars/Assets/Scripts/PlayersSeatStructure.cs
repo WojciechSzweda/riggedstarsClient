@@ -29,8 +29,10 @@ public class PlayersSeatStructure : MonoBehaviour {
         for (int i = clientIndex + 1; i < clientIndex + maxPlayers; i++) {
             int playerIndex = i % maxPlayers;
             int seatIndex = i - (clientIndex + 1);
-            if (players.ContainsKey(playerIndex.ToString()))
+            if (players.ContainsKey(playerIndex.ToString())) {
                 PlayerSeatSlots[seatIndex].CurrentSeat.SeatPlayer(players[playerIndex.ToString()]);
+                PlayerSeatSlots[seatIndex].CurrentSeat.SetStack(players[playerIndex.ToString()].Stack);
+            }
             else {
                 PlayerSeatSlots[seatIndex].CurrentSeat.RemovePlayer();
             }
@@ -50,7 +52,10 @@ public class PlayersSeatStructure : MonoBehaviour {
     }
 
     public void SetClientBet(int id, int ammount) {
-        PlayerSeatSlots.Where(x => x.CurrentSeat.Player != null).FirstOrDefault(x => x.CurrentSeat.Player.ID == id).CurrentSeat.SetBet(ammount);
+        var clientSeat = PlayerSeatSlots.Where(x => x.CurrentSeat.Player != null).FirstOrDefault(x => x.CurrentSeat.Player.ID == id).CurrentSeat;
+        clientSeat.SetBet(ammount);
+        clientSeat.ChangeStack(-ammount);
+
     }
 
     public void ClearAllBets() {

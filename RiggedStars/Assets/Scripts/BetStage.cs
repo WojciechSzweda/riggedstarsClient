@@ -19,6 +19,7 @@ public class BetStage : MonoBehaviour {
     [SerializeField]
     Slider BetSlider;
     [SerializeField] Bet PlayerBetField;
+    [SerializeField] Seat PlayerSeat;
 
     public delegate void SendBetMessageEvent(string message);
     public event SendBetMessageEvent OnClientAction;
@@ -39,7 +40,9 @@ public class BetStage : MonoBehaviour {
     }
 
     public void ActiveBet(int minBet) {
-        BetInput.text = minBet.ToString();
+        BetSlider.maxValue = PlayerSeat.Player.Stack;
+        if (PlayerSeat.Player.Stack <= minBet)
+            minBet = PlayerSeat.Player.Stack;
         if (minBet == 0) {
             //can check, cant fold
             CheckButton.interactable = true;
@@ -72,6 +75,7 @@ public class BetStage : MonoBehaviour {
         SendBetMessage(bet);
         ActionTaken();
         PlayerBetField.SetBetSize(bet);
+        PlayerSeat.ChangeStack(-bet);
     }
 
     void SendBetMessage(int bet = 0) {

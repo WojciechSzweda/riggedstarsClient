@@ -13,6 +13,7 @@ public class Seat : MonoBehaviour {
     [SerializeField] Image ActiveBorder;
     [SerializeField] Color ActiveBorderColor;
     [SerializeField] Bet BetPrefab;
+    [SerializeField] TextMeshProUGUI StackField;
     Bet Bet;
 
     private Color activeBorderColorDefault;
@@ -51,8 +52,15 @@ public class Seat : MonoBehaviour {
         PlayerStackText.SetText(string.Empty);
     }
 
-    public void SetStackText(int stack) {
+    public void SetStack(int stack) {
+        Player.Stack = stack;
         PlayerStackText.SetText(stack.ToString());
+        if (StackField != null)
+            StackField.SetText(stack.ToString());
+    }
+
+    public void ChangeStack(int ammount) {
+        SetStack(Player.Stack + ammount);
     }
 
     public void SetActiveBorder(bool active) {

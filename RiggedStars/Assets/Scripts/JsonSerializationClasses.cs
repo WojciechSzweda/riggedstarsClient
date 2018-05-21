@@ -84,8 +84,12 @@ public class WsChatMessage {
 }
 
 public class EndRoundMessageForm : WsForm {
-    public PlayerInfo[] Winners { get; set; }
-    public int Pot { get; set; }
+    public PotWinner[] Winners { get; set; }
+}
+
+public class PotWinner {
+    public PlayerInfo Winner { get; set; }
+    public int Ammount { get; set; }
 }
 
 

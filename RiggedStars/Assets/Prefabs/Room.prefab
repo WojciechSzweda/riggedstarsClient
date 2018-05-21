@@ -1302,7 +1302,7 @@ Animator:
   m_GameObject: {fileID: 1646333864041884}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 39a50a3e940cc884f8aede7988f23bba, type: 2}
+  m_Controller: {fileID: 0}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -1427,6 +1427,7 @@ MonoBehaviour:
   BetInput: {fileID: 114703356805295768}
   BetSlider: {fileID: 114359056705868198}
   PlayerBetField: {fileID: 114325531622851522}
+  PlayerSeat: {fileID: 114176922714851004}
 --- !u!114 &114050406953477554
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1882,6 +1883,7 @@ MonoBehaviour:
   ActiveBorderColor: {r: 0, g: 1, b: 0.048275948, a: 0.872}
   BetPrefab: {fileID: 114404009491269068, guid: 537cc7889d7747246be028d8dba2b4c3,
     type: 2}
+  StackField: {fileID: 114662504518410252}
 --- !u!114 &114180070838043684
 MonoBehaviour:
   m_ObjectHideFlags: 1
