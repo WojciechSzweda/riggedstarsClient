@@ -12,6 +12,7 @@ public class Seat : MonoBehaviour {
     [SerializeField] Card cardPrefab;
     [SerializeField] Image ActiveBorder;
     [SerializeField] Color ActiveBorderColor;
+    [SerializeField] Color FoldBorderColor;
     [SerializeField] Bet BetPrefab;
     [SerializeField] TextMeshProUGUI StackField;
     Bet Bet;
@@ -27,6 +28,9 @@ public class Seat : MonoBehaviour {
 
     public void ShowCards(CardForm[] cards) {
         for (int i = 0; i < CardSlots.Length; i++) {
+            for (int j = 0; j < CardSlots[i].transform.childCount; j++) {
+                Destroy(CardSlots[i].transform.GetChild(j).gameObject);
+            }
             var card = Instantiate<Card>(cardPrefab, CardSlots[i].transform);
             card.CreateCard(cards[i]);
         }
@@ -79,4 +83,9 @@ public class Seat : MonoBehaviour {
     public void ClearBet() {
         Bet.ClearBet();
     }
+
+    public void FoldCue() {
+        ActiveBorder.color = FoldBorderColor;
+    }
+
 }

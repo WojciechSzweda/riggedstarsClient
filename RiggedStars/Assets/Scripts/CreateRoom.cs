@@ -39,9 +39,7 @@ public class CreateRoom : MonoBehaviour {
             yield break;
         }
 
-        Debug.Log("room created");
         FindObjectOfType<HubLoader>().RefreshRoomList();
-        //TODO: make prefab of this gameobject?
         gameObject.SetActive(false);
         NameInput.text = "";
         MaxClientsInput.text = "";

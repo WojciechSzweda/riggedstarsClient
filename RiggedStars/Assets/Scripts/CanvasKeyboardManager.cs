@@ -42,7 +42,6 @@ public class CanvasKeyboardManager : MonoBehaviour {
                 if (inputfield != null) inputfield.OnPointerClick(new PointerEventData(system));
                 system.SetSelectedGameObject(next.gameObject, new BaseEventData(system));
             }
-            Debug.Log(next.name);
         }
     }
 #pragma warning restore 618

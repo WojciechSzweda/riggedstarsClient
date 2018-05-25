@@ -538,15 +538,15 @@ PlayerSettings:
   spritePackerPolicy: 
   webGLMemorySize: 128
   webGLExceptionSupport: 0
-  webGLNameFilesAsHashes: 0
-  webGLDataCaching: 0
+  webGLNameFilesAsHashes: 1
+  webGLDataCaching: 1
   webGLDebugSymbols: 0
   webGLEmscriptenArgs: 
   webGLModulesDirectory: 
-  webGLTemplate: APPLICATION:Minimal
+  webGLTemplate: APPLICATION:Default
   webGLAnalyzeBuildSize: 0
   webGLUseEmbeddedResources: 0
-  webGLUseWasm: 0
+  webGLUseWasm: 1
   webGLCompressionFormat: 1
   scriptingDefineSymbols: {}
   platformArchitecture: {}

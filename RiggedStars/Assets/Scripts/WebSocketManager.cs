@@ -19,14 +19,11 @@ public class WebSocketManager : MonoBehaviour {
 
     IEnumerator ConnectToWebSocket(string ws) {
         webSocket = new WebSocket(new Uri(ws));
-        Debug.Log("Trying to connect to WebSocket: " + ws);
         yield return StartCoroutine(webSocket.Connect());
-        Debug.Log("Connected to websocket: " + ws);
         while (true) {
             byte[] replyBytes = webSocket.Recv();
             if (replyBytes != null) {
                 string reply = Encoding.ASCII.GetString(replyBytes);
-                Debug.Log("Received: " + reply);
                 var replyType = JsonConvert.DeserializeObject<WsForm>(reply).Type;
                 if (WebsocketActions.ContainsKey(replyType))
                     WebsocketActions[replyType](reply);

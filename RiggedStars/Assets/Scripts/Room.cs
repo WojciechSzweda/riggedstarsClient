@@ -53,6 +53,15 @@ public class Room : MonoBehaviour {
         PlayerSeatSlot.SetActiveBorder(id == ClientInfo.ID);
     }
 
+    void FoldedPlayerBorder(int id) {
+        if (id == ClientInfo.ID){
+            PlayerSeatSlot.FoldCue();
+        }
+        else {
+            CurrentSeatStructure.SetClientFoldCue(id);
+        }
+    }
+
     Dictionary<string, Action<string>> MakeWebsocketActions() {
         var WebsocketActions = new Dictionary<string, Action<string>>();
         WebsocketActions.Add("text", (reply) => {
@@ -85,21 +94,26 @@ public class Room : MonoBehaviour {
         });
         WebsocketActions.Add("startRound", (reply) => {
             Pot.ClearPot();
+            TableCards.ClearTable();
+            CurrentSeatStructure.ClearClientsCards();
+            CurrentSeatStructure.DefaultActiveBorder();
             var replyMsg = JsonConvert.DeserializeObject<StartRoundForm>(reply);
             CurrentSeatStructure.FillSeatsWithPlayers(replyMsg.Players);
             PlayerSeatSlot.SetStack(replyMsg.Players[CurrentSeatStructure.GetClientIndex(replyMsg.Players)].Stack);
             //TODO: button player mark
         });
         WebsocketActions.Add("endRound", (reply) => {
-            TableCards.ClearTable();
-            PlayerSeatSlot.ClearCards();
+            
             var replyMsg = JsonConvert.DeserializeObject<EndRoundMessageForm>(reply);
             WinnerNotifier.ShowWinnerMessage(replyMsg.Winners);
             foreach (var winner in replyMsg.Winners) {
                 if (winner.Winner.ID == ClientInfo.ID) {
                     PlayerSeatSlot.ChangeStack(winner.Ammount);
                 }
-                CurrentSeatStructure.SetClientBet(winner.Winner.ID, winner.Ammount);
+                else {
+                    CurrentSeatStructure.SetClientBet(winner.Winner.ID, winner.Ammount);
+                    CurrentSeatStructure.ShowClientCards(winner.Winner.ID, winner.Cards);
+                }
             }
 
         });
@@ -120,7 +134,15 @@ public class Room : MonoBehaviour {
             Pot.AddToPot(replyMsg.Pot);
         });
         WebsocketActions.Add("fold", (reply) => {
-            //TODO: change color of folded player
+            var replyMsg = JsonConvert.DeserializeObject<PlayerInfo>(reply);
+            ActivePlayerBorder(replyMsg.ID);
+            if (replyMsg.ID == ClientInfo.ID) {
+                //TODO: hiding cards instead of deleting them, show them on hover
+                PlayerSeatSlot.ClearCards();
+            }
+            else {
+                CurrentSeatStructure.SetClientFoldCue(replyMsg.ID);
+            }
 
         });
         return WebsocketActions;

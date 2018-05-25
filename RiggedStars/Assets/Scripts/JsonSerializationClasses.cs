@@ -89,6 +89,7 @@ public class EndRoundMessageForm : WsForm {
 
 public class PotWinner {
     public PlayerInfo Winner { get; set; }
+    public CardForm[] Cards { get; set; }
     public int Ammount { get; set; }
 }
 

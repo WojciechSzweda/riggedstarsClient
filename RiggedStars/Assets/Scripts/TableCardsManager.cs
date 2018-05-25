@@ -61,5 +61,6 @@ public class TableCardsManager : MonoBehaviour {
         for (int i = 0; i < RiverCardSlot.transform.childCount; i++) {
             Destroy(RiverCardSlot.transform.GetChild(i).gameObject);
         }
+        TurnCardDown = false;
     }
 }

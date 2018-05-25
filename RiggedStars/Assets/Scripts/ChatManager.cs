@@ -38,8 +38,6 @@ public class ChatManager : MonoBehaviour {
     }
 
     public void MessageReceived(string name, string message) {
-        Debug.Log("Message: " + message);
-
         CreateMessageObject(name, message);
     }
 }

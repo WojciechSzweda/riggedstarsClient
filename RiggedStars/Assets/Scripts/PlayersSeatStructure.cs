@@ -52,7 +52,9 @@ public class PlayersSeatStructure : MonoBehaviour {
     }
 
     public void SetClientBet(int id, int ammount) {
-        var clientSeat = PlayerSeatSlots.Where(x => x.CurrentSeat.Player != null).FirstOrDefault(x => x.CurrentSeat.Player.ID == id).CurrentSeat;
+        var clientSeat = PlayerSeatSlots.Where(x => x.CurrentSeat.Player != null)
+            .FirstOrDefault(x => x.CurrentSeat.Player.ID == id)
+            .CurrentSeat;
         clientSeat.SetBet(ammount);
         clientSeat.ChangeStack(-ammount);
 
@@ -62,6 +64,34 @@ public class PlayersSeatStructure : MonoBehaviour {
         foreach (var slot in PlayerSeatSlots) {
             if (slot.CurrentSeat.Player != null) {
                 slot.CurrentSeat.ClearBet();
+            }
+        }
+    }
+
+    public void ShowClientCards(int id, CardForm[] cards) {
+        var clientSeat = PlayerSeatSlots.Where(x => x.CurrentSeat.Player != null)
+            .FirstOrDefault(x => x.CurrentSeat.Player.ID == id).CurrentSeat;
+        clientSeat.ShowCards(cards);
+    }
+
+    public void ClearClientsCards() {
+        foreach (var slot in PlayerSeatSlots) {
+            if (slot.CurrentSeat.Player != null) {
+                slot.CurrentSeat.ClearCards();
+            }
+        }
+    }
+
+    public void SetClientFoldCue(int id) {
+        var clientSeat = PlayerSeatSlots.Where(x => x.CurrentSeat.Player != null)
+            .FirstOrDefault(x => x.CurrentSeat.Player.ID == id).CurrentSeat;
+        clientSeat.FoldCue();
+    }
+
+    public void DefaultActiveBorder() {
+        foreach (var slot in PlayerSeatSlots) {
+            if (slot.CurrentSeat.Player != null) {
+                slot.CurrentSeat.SetActiveBorder(false);
             }
         }
     }
